@@ -1,0 +1,184 @@
+import { ItemType, RPGSet } from "./types";
+
+export const BASE_PROMPT = "Fantasy RPG game item illustration, 2D digital art, isolated on pure transparent background, no background, no floor, no shadow beneath, centered composition, detailed texture, dark fantasy medieval aesthetic, dramatic lighting with subtle inner glow, game asset style similar to Diablo or Path of Exile, high contrast, ultra detailed.";
+
+export const BOOTS_POSE = "Both boots shown as a pair, left and right boot side by side, toes pointing diagonally forward and outward, slight 3/4 perspective view, symmetrical composition.";
+
+export const GLOVES_POSE = "Both gloves shown as a complete pair arranged in an X formation, fingers pointing downward, palms facing viewer, overlapping at the wrists to form the X shape, symmetrical composition centered in frame.";
+
+export const RPG_SETS: RPGSet[] = [
+  {
+    id: "twilight-order",
+    name: "Ordem do Crepúsculo",
+    theme: "Aço negro com detalhes dourados, estilo cavaleiro imperial",
+    bonus: "+25 Ataque, +40 Defesa, +100 HP",
+    color: "#06090f",
+    accentColor: "#c9a84c",
+    items: [
+      {
+        id: "twilight-helm",
+        name: "Elmo do Crepúsculo",
+        type: ItemType.HELMET,
+        prompt: `${BASE_PROMPT} Full face knight helmet, black steel with gold filigree trim, dark visor with orange ember glow from within, ornate crown-like crest on top, scratched battle-worn metal, dark gold runes engraved on cheeks, color palette: black #06090f, dark gold #c9a84c, ember orange.`,
+      },
+      {
+        id: "twilight-armor",
+        name: "Armadura do Crepúsculo",
+        type: ItemType.ARMOR,
+        prompt: `${BASE_PROMPT} Heavy full plate chest armor, black tempered steel with gold trim on edges and pauldrons, engraved sun emblem on chest plate, battle-worn with subtle scratches, layered metal plates with dark leather straps, color palette: black #06090f, dark gold #c9a84c, deep iron grey.`,
+      },
+      {
+        id: "twilight-boots",
+        name: "Botas do Crepúsculo",
+        type: ItemType.BOOTS,
+        prompt: `${BASE_PROMPT} ${BOOTS_POSE} Heavy knight sabatons, black steel boots with gold trim, articulated metal plates over dark leather, pointed toe cap with small gold ornament, battle-worn texture, color palette: black #06090f, dark gold #c9a84c.`,
+      },
+      {
+        id: "twilight-sword",
+        name: "Espada do Crepúsculo",
+        type: ItemType.WEAPON,
+        prompt: `${BASE_PROMPT} Two-handed longsword, black steel blade with gold runes glowing along the fuller, ornate crossguard with twin dragon heads in gold, wrapped dark leather grip with gold wire binding, pommel shaped like a crown, faint orange magical aura along blade edge, color palette: black #06090f, dark gold #c9a84c, ember glow.`,
+      },
+      {
+        id: "twilight-shield",
+        name: "Escudo do Crepúsculo",
+        type: ItemType.OFFHAND,
+        prompt: `${BASE_PROMPT} Large kite shield, black steel with gold embossed sun emblem at center, reinforced edges with gold trim, aged leather backing visible at corners, battle-scarred surface, subtle magical barrier shimmer, color palette: black #06090f, dark gold #c9a84c.`,
+      },
+      {
+        id: "twilight-amulet",
+        name: "Amuleto do Crepúsculo",
+        type: ItemType.AMULET,
+        prompt: `${BASE_PROMPT} Ornate pendant amulet on a dark chain, black steel frame with a glowing amber gemstone at center, gold filigree surrounding the gem in a sun pattern, warm orange magical glow emanating from gem, intricate engravings on the frame, color palette: black #06090f, dark gold #c9a84c, amber gemstone.`,
+      },
+      {
+        id: "twilight-ring",
+        name: "Anel do Crepúsculo",
+        type: ItemType.RING,
+        prompt: `${BASE_PROMPT} Heavy signet ring, black steel band with a flat top bearing an engraved crown emblem, small amber gemstone inlaid beside the emblem, thick warrior's ring with worn edges, subtle gold highlights on engraving, color palette: black #06090f, dark gold #c9a84c, amber.`,
+      },
+      {
+        id: "twilight-gloves",
+        name: "Manoplas do Crepúsculo",
+        type: ItemType.GLOVES,
+        prompt: `${BASE_PROMPT} ${GLOVES_POSE} Heavy knight gauntlets, black steel plates over dark leather, gold trim on knuckle guards, articulated finger plates, battle-worn with scratches, color palette: black #06090f, dark gold #c9a84c.`,
+      },
+    ],
+  },
+  {
+    id: "arcane-sage",
+    name: "Sábio Arcano",
+    theme: "Roxo escuro com runas prateadas e cristais brilhantes",
+    bonus: "+60 Ataque mágico, +30 HP, +20 Velocidade",
+    color: "#1a0a2e",
+    accentColor: "#c0c0c0",
+    items: [
+      {
+        id: "arcane-tiara",
+        name: "Tiara do Sábio Arcano",
+        type: ItemType.HELMET,
+        prompt: `${BASE_PROMPT} Mage's tiara headpiece, dark silver curved band with a large purple amethyst crystal at center, silver runes engraved across the band, smaller crystals on each side, magical purple glow radiating from gems, ethereal wisps floating around it, color palette: dark silver, deep purple #6a0dad, arcane blue.`,
+      },
+      {
+        id: "arcane-robe",
+        name: "Manto do Sábio Arcano",
+        type: ItemType.ARMOR,
+        prompt: `${BASE_PROMPT} Mage chest robe armor piece, dark midnight purple fabric with silver arcane rune embroidery along collar and chest, padded shoulders with silver pauldrons, glowing purple sigil at chest center, flowing fabric with dark lining, color palette: midnight purple #1a0a2e, silver #c0c0c0, glowing purple runes.`,
+      },
+      {
+        id: "arcane-boots",
+        name: "Botas do Sábio Arcano",
+        type: ItemType.BOOTS,
+        prompt: `${BASE_PROMPT} ${BOOTS_POSE} Mage's pointed boots, dark purple leather with silver rune stitching along the shaft, slightly curled toe, silver buckle clasps, subtle purple glow at the sole as if hovering slightly, color palette: dark purple #1a0a2e, silver #c0c0c0.`,
+      },
+      {
+        id: "arcane-staff",
+        name: "Cajado do Sábio Arcano",
+        type: ItemType.WEAPON,
+        prompt: `${BASE_PROMPT} Tall wizard staff, dark twisted wood shaft with silver bands, large purple amethyst crystal orb at the top held by silver claws, arcane runes glowing purple along the shaft, magical energy swirling around the crystal, color palette: dark wood, silver #c0c0c0, glowing purple #8a2be2.`,
+      },
+      {
+        id: "arcane-grimoire",
+        name: "Grimório do Sábio Arcano",
+        type: ItemType.OFFHAND,
+        prompt: `${BASE_PROMPT} Ancient spellbook grimoire, dark leather cover with a large purple glowing eye embossed at center, silver metal corner reinforcements, arcane runes etched on cover, pages glowing faintly at edges, floating magical sparks around it, color palette: dark leather brown, silver #c0c0c0, purple glow #8a2be2.`,
+      },
+      {
+        id: "arcane-amulet",
+        name: "Amuleto do Sábio Arcano",
+        type: ItemType.AMULET,
+        prompt: `${BASE_PROMPT} Arcane mage amulet, a large teardrop purple amethyst crystal in a silver claw setting, hanging from a thin silver chain, runes etched on the metal setting, pulsing purple magical glow from within the gem, small arcane sparks floating around it, color palette: silver #c0c0c0, deep purple #6a0dad.`,
+      },
+      {
+        id: "arcane-ring",
+        name: "Anel do Sábio Arcano",
+        type: ItemType.RING,
+        prompt: `${BASE_PROMPT} Thin elegant silver ring, tall setting holding a deep purple amethyst gemstone, arcane rune engraved on each side of the band, magical purple glow emanating from gem, refined and scholarly design, color palette: silver #c0c0c0, deep purple #6a0dad.`,
+      },
+      {
+        id: "arcane-gloves",
+        name: "Luvas do Sábio Arcano",
+        type: ItemType.GLOVES,
+        prompt: `${BASE_PROMPT} ${GLOVES_POSE} Mage's fingerless gloves, dark purple leather with silver arcane runes embroidered on the back of the hand, silver ring reinforcements at knuckles, subtle purple glow at fingertips, color palette: dark purple #1a0a2e, silver #c0c0c0, purple glow.`,
+      },
+    ],
+  },
+  {
+    id: "shadow-hunter",
+    name: "Caçador das Sombras",
+    theme: "Couro negro com detalhes esmeralda, estilo ranger furtivo",
+    bonus: "+45 Ataque, +35 Velocidade, +15 Defesa",
+    color: "#1a3a1a",
+    accentColor: "#50c878",
+    items: [
+      {
+        id: "shadow-hood",
+        name: "Capuz do Caçador das Sombras",
+        type: ItemType.HELMET,
+        prompt: `${BASE_PROMPT} Ranger hood and mask, dark forest green leather hood with black fabric, lower face mask with emerald green eye slit, small leaves and feather ornaments on side, dark stitching detail, subtle shadow texture, color palette: dark green #1a3a1a, black #06090f, emerald #50c878.`,
+      },
+      {
+        id: "shadow-vest",
+        name: "Colete do Caçador das Sombras",
+        type: ItemType.ARMOR,
+        prompt: `${BASE_PROMPT} Ranger leather chest armor, layered dark green and black leather plates, padded shoulders with small emerald green gems, quiver strap across chest, dark metal buckles, reinforced stitching visible, scratched and worn from use, color palette: dark green #1a3a1a, black #06090f, emerald highlights #50c878.`,
+      },
+      {
+        id: "shadow-boots",
+        name: "Botas do Caçador das Sombras",
+        type: ItemType.BOOTS,
+        prompt: `${BASE_PROMPT} ${BOOTS_POSE} Ranger leather boots, tall dark green leather with black reinforced toe and heel, thin laces up the front, soft sole for silent movement, small emerald gem clasp at ankle, color palette: dark green #1a3a1a, black #06090f, emerald #50c878.`,
+      },
+      {
+        id: "shadow-bow",
+        name: "Arco do Caçador das Sombras",
+        type: ItemType.WEAPON,
+        prompt: `${BASE_PROMPT} Recurve longbow, dark black wood with emerald green sinew string, carved runes along the limbs with green glow, silver tip reinforcements at each end, an arrow nocked and ready, subtle wind energy wisps around the string, color palette: black wood, emerald #50c878, silver tips.`,
+      },
+      {
+        id: "shadow-dagger",
+        name: "Adaga do Caçador das Sombras",
+        type: ItemType.OFFHAND,
+        prompt: `${BASE_PROMPT} Assassin's short dagger, black blade with a serrated back edge, emerald green venom channel along the blade, wrapped dark leather grip with green cord binding, crossguard shaped like a curved fang, green poison drip effect on blade tip, color palette: black #06090f, emerald #50c878, dark leather.`,
+      },
+      {
+        id: "shadow-amulet",
+        name: "Amuleto do Caçador das Sombras",
+        type: ItemType.AMULET,
+        prompt: `${BASE_PROMPT} Hunter's amulet, carved dark bone or antler pendant in the shape of a crescent moon, small emerald gem at center, thin dark leather cord, nature-worn texture with small rune carvings, faint green energy glow at the gem, color palette: bone white/dark, emerald #50c878, dark cord.`,
+      },
+      {
+        id: "shadow-ring",
+        name: "Anel do Caçador das Sombras",
+        type: ItemType.RING,
+        prompt: `${BASE_PROMPT} Dark rough-cut iron ring, wide band with a flat emerald gemstone set flush into the metal, small carved leaves on each side of the setting, worn and scratched from use, faint green magical shimmer on the stone, color palette: dark iron #2a2a2a, emerald #50c878.`,
+      },
+      {
+        id: "shadow-gloves",
+        name: "Luvas do Caçador das Sombras",
+        type: ItemType.GLOVES,
+        prompt: `${BASE_PROMPT} ${GLOVES_POSE} Ranger leather gloves, dark green leather with black reinforced knuckle pads, cut fingertips for better grip, thin emerald green stitching detail on back of hand, worn and flexible texture, color palette: dark green #1a3a1a, black #06090f, emerald #50c878.`,
+      },
+    ],
+  },
+];
