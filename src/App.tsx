@@ -13,16 +13,25 @@ import {
   ChevronRight,
   Eye
 } from "lucide-react";
-import { RPG_SETS } from "./constants";
-import { RPGSet, RPGItem } from "./types";
+import { RPG_SETS, COMMON_ITEMS } from "./constants";
+import { RPGSet, RPGItem, Rarity } from "./types";
 import { generateItemImage } from "./services/geminiService";
 
 export default function App() {
+  const [activeTab, setActiveTab] = useState<string>(RPG_SETS[0].id);
   const [selectedSet, setSelectedSet] = useState<RPGSet>(RPG_SETS[0]);
   const [generatedImages, setGeneratedImages] = useState<Record<string, string>>({});
   const [loadingItems, setLoadingItems] = useState<Record<string, boolean>>({});
   const [error, setError] = useState<string | null>(null);
   const [previewImage, setPreviewImage] = useState<{ url: string; name: string } | null>(null);
+  const [randomCommonItem, setRandomCommonItem] = useState<RPGItem | null>(null);
+
+  useEffect(() => {
+    const set = RPG_SETS.find(s => s.id === activeTab);
+    if (set) {
+      setSelectedSet(set);
+    }
+  }, [activeTab]);
 
   const handleGenerate = async (item: RPGItem) => {
     if (loadingItems[item.id]) return;
@@ -69,9 +78,9 @@ export default function App() {
             {RPG_SETS.map((set) => (
               <button
                 key={set.id}
-                onClick={() => setSelectedSet(set)}
+                onClick={() => setActiveTab(set.id)}
                 className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 ${
-                  selectedSet.id === set.id
+                  activeTab === set.id
                     ? "bg-white text-black shadow-lg"
                     : "text-white/60 hover:text-white hover:bg-white/5"
                 }`}
@@ -79,6 +88,18 @@ export default function App() {
                 {set.name}
               </button>
             ))}
+            <div className="w-px h-4 bg-white/10 mx-1"></div>
+            <button
+              onClick={() => setActiveTab('common')}
+              className={`px-5 py-2 rounded-full text-sm font-medium transition-all duration-300 flex items-center gap-2 ${
+                activeTab === 'common'
+                  ? "bg-emerald-500 text-white shadow-lg shadow-emerald-500/20"
+                  : "text-emerald-500/60 hover:text-emerald-500 hover:bg-emerald-500/5"
+              }`}
+            >
+              <RefreshCw className={`w-3.5 h-3.5 ${activeTab === 'common' ? 'animate-spin-slow' : ''}`} />
+              Itens Comuns
+            </button>
           </nav>
 
           <div className="flex items-center gap-4">
@@ -91,171 +112,315 @@ export default function App() {
       </header>
 
       <main className="max-w-7xl mx-auto px-6 py-12">
-        {/* Set Info Banner */}
-        <motion.div 
-          key={selectedSet.id}
-          initial={{ opacity: 0, y: 20 }}
-          animate={{ opacity: 1, y: 0 }}
-          className="mb-12 grid grid-cols-1 lg:grid-cols-3 gap-8 items-center"
-        >
-          <div className="lg:col-span-2">
-            <div className="flex items-center gap-3 mb-4">
-              <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-widest text-white/60">
-                Active Set
-              </span>
-              <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent"></div>
-            </div>
-            <h2 className="fantasy-title text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-white via-white to-white/40 bg-clip-text text-transparent">
-              {selectedSet.name}
-            </h2>
-            <p className="text-lg text-white/60 max-w-2xl leading-relaxed italic">
-              "{selectedSet.theme}"
-            </p>
-          </div>
-
-          <div className="glass-panel p-6 rounded-2xl border border-white/10 relative overflow-hidden group">
-            <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
-              {selectedSet.id === "twilight-order" && <Shield size={80} />}
-              {selectedSet.id === "arcane-sage" && <Zap size={80} />}
-              {selectedSet.id === "shadow-hunter" && <Wind size={80} />}
-            </div>
-            <h3 className="text-xs font-bold uppercase tracking-widest text-white/40 mb-4 flex items-center gap-2">
-              <Gem className="w-3 h-3" /> Set Bonus
-            </h3>
-            <div className="text-xl font-mono text-white/90">
-              {selectedSet.bonus.split(', ').map((bonus, i) => (
-                <div key={i} className="flex items-center gap-2 mb-1">
-                  <ChevronRight className="w-4 h-4 text-white/20" />
-                  {bonus}
-                </div>
-              ))}
-            </div>
-          </div>
-        </motion.div>
-
-        {error && (
-          <motion.div 
-            initial={{ opacity: 0, scale: 0.95 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="mb-8 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm flex items-center gap-3"
-          >
-            <Info className="w-5 h-5" />
-            {error}
-          </motion.div>
-        )}
-
-        {/* Items Grid */}
-        <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
-          {selectedSet.items.map((item, index) => (
-            <motion.div
-              key={item.id}
+        {activeTab !== 'common' ? (
+          <>
+            {/* Set Info Banner */}
+            <motion.div 
+              key={selectedSet.id}
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              transition={{ delay: index * 0.05 }}
-              className="group relative"
+              className="mb-12 grid grid-cols-1 lg:grid-cols-3 gap-8 items-center"
             >
-              <div className="glass-panel rounded-2xl overflow-hidden border border-white/5 hover:border-white/20 transition-all duration-500 flex flex-col h-full bg-gradient-to-b from-white/[0.02] to-transparent">
-                {/* Image Area */}
-                <div className="aspect-square relative bg-black/40 overflow-hidden">
-                  <AnimatePresence mode="wait">
-                    {generatedImages[item.id] ? (
-                      <motion.img
-                        key="image"
-                        initial={{ opacity: 0, scale: 1.1 }}
-                        animate={{ opacity: 1, scale: 1 }}
-                        src={generatedImages[item.id]}
-                        alt={item.name}
-                        className="w-full h-full object-contain cursor-pointer"
-                        onClick={() => setPreviewImage({ url: generatedImages[item.id], name: item.name })}
-                        referrerPolicy="no-referrer"
-                      />
-                    ) : (
-                      <motion.div
-                        key="placeholder"
-                        initial={{ opacity: 0 }}
-                        animate={{ opacity: 1 }}
-                        exit={{ opacity: 0 }}
-                        className="w-full h-full flex flex-col items-center justify-center p-8 text-center"
-                      >
-                        <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-500">
-                          <Sparkles className="w-8 h-8 text-white/20" />
-                        </div>
-                        <p className="text-xs text-white/30 font-medium uppercase tracking-widest">Not Forged Yet</p>
-                      </motion.div>
-                    )}
-                  </AnimatePresence>
-
-                  {/* Loading Overlay */}
-                  {loadingItems[item.id] && (
-                    <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
-                      <RefreshCw className="w-10 h-10 text-white animate-spin mb-4" />
-                      <p className="text-sm font-medium text-white/80 animate-pulse">Forging Artifact...</p>
-                      <p className="text-[10px] text-white/40 mt-2 uppercase tracking-tighter">Consulting the Ancients</p>
-                    </div>
-                  )}
-
-                  {/* Hover Actions */}
-                  {generatedImages[item.id] && !loadingItems[item.id] && (
-                    <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                      <button 
-                        onClick={() => setPreviewImage({ url: generatedImages[item.id], name: item.name })}
-                        className="p-2 rounded-full bg-black/60 backdrop-blur-md border border-white/10 hover:bg-white hover:text-black transition-colors"
-                        title="View Large"
-                      >
-                        <Eye className="w-4 h-4" />
-                      </button>
-                      <button 
-                        onClick={() => downloadImage(generatedImages[item.id], item.name)}
-                        className="p-2 rounded-full bg-black/60 backdrop-blur-md border border-white/10 hover:bg-white hover:text-black transition-colors"
-                        title="Download"
-                      >
-                        <Download className="w-4 h-4" />
-                      </button>
-                    </div>
-                  )}
+              <div className="lg:col-span-2">
+                <div className="flex items-center gap-3 mb-4">
+                  <span className="px-3 py-1 rounded-full bg-white/5 border border-white/10 text-[10px] font-bold uppercase tracking-widest text-white/60">
+                    Active Set
+                  </span>
+                  <div className="h-px flex-1 bg-gradient-to-r from-white/10 to-transparent"></div>
                 </div>
+                <h2 className="fantasy-title text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-white via-white to-white/40 bg-clip-text text-transparent">
+                  {selectedSet.name}
+                </h2>
+                <p className="text-lg text-white/60 max-w-2xl leading-relaxed italic">
+                  "{selectedSet.theme}"
+                </p>
+              </div>
 
-                {/* Content Area */}
-                <div className="p-5 flex flex-col flex-1">
-                  <div className="mb-4">
-                    <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30 mb-1 block">
-                      {item.type}
-                    </span>
-                    <h4 className="text-lg font-semibold text-white/90 group-hover:text-white transition-colors">
-                      {item.name}
-                    </h4>
-                  </div>
-
-                  <div className="mt-auto pt-4 border-t border-white/5">
-                    <button
-                      onClick={() => handleGenerate(item)}
-                      disabled={loadingItems[item.id]}
-                      className={`w-full py-3 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 transition-all duration-300 ${
-                        generatedImages[item.id]
-                          ? "bg-white/5 hover:bg-white/10 text-white/60 hover:text-white border border-white/10"
-                          : "bg-white text-black hover:bg-white/90 shadow-lg shadow-white/5"
-                      }`}
-                    >
-                      {loadingItems[item.id] ? (
-                        <RefreshCw className="w-4 h-4 animate-spin" />
-                      ) : generatedImages[item.id] ? (
-                        <>
-                          <RefreshCw className="w-4 h-4" />
-                          Reforge
-                        </>
-                      ) : (
-                        <>
-                          <Sparkles className="w-4 h-4" />
-                          Forge Item
-                        </>
-                      )}
-                    </button>
-                  </div>
+              <div className="glass-panel p-6 rounded-2xl border border-white/10 relative overflow-hidden group">
+                <div className="absolute top-0 right-0 p-4 opacity-10 group-hover:opacity-20 transition-opacity">
+                  {selectedSet.id === "twilight-order" && <Shield size={80} />}
+                  {selectedSet.id === "arcane-sage" && <Zap size={80} />}
+                  {selectedSet.id === "shadow-hunter" && <Wind size={80} />}
+                </div>
+                <h3 className="text-xs font-bold uppercase tracking-widest text-white/40 mb-4 flex items-center gap-2">
+                  <Gem className="w-3 h-3" /> Set Bonus
+                </h3>
+                <div className="text-xl font-mono text-white/90">
+                  {selectedSet.bonus.split(', ').map((bonus, i) => (
+                    <div key={i} className="flex items-center gap-2 mb-1">
+                      <ChevronRight className="w-4 h-4 text-white/20" />
+                      {bonus}
+                    </div>
+                  ))}
                 </div>
               </div>
             </motion.div>
-          ))}
-        </div>
+
+            {error && (
+              <motion.div 
+                initial={{ opacity: 0, scale: 0.95 }}
+                animate={{ opacity: 1, scale: 1 }}
+                className="mb-8 p-4 bg-red-500/10 border border-red-500/20 rounded-xl text-red-400 text-sm flex items-center gap-3"
+              >
+                <Info className="w-5 h-5" />
+                {error}
+              </motion.div>
+            )}
+
+            {/* Items Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {selectedSet.items.map((item, index) => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="group relative"
+                >
+                  <div className="glass-panel rounded-2xl overflow-hidden border border-white/5 hover:border-white/20 transition-all duration-500 flex flex-col h-full bg-gradient-to-b from-white/[0.02] to-transparent">
+                    {/* Image Area */}
+                    <div className="aspect-square relative bg-black/40 overflow-hidden">
+                      <AnimatePresence mode="wait">
+                        {generatedImages[item.id] ? (
+                          <motion.img
+                            key="image"
+                            initial={{ opacity: 0, scale: 1.1 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            src={generatedImages[item.id]}
+                            alt={item.name}
+                            className="w-full h-full object-contain cursor-pointer"
+                            onClick={() => setPreviewImage({ url: generatedImages[item.id], name: item.name })}
+                            referrerPolicy="no-referrer"
+                          />
+                        ) : (
+                          <motion.div
+                            key="placeholder"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="w-full h-full flex flex-col items-center justify-center p-8 text-center"
+                          >
+                            <div className="w-16 h-16 rounded-full bg-white/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-500">
+                              <Sparkles className="w-8 h-8 text-white/20" />
+                            </div>
+                            <p className="text-xs text-white/30 font-medium uppercase tracking-widest">Not Forged Yet</p>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+
+                      {/* Loading Overlay */}
+                      {loadingItems[item.id] && (
+                        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
+                          <RefreshCw className="w-10 h-10 text-white animate-spin mb-4" />
+                          <p className="text-sm font-medium text-white/80 animate-pulse">Forging Artifact...</p>
+                          <p className="text-[10px] text-white/40 mt-2 uppercase tracking-tighter">Consulting the Ancients</p>
+                        </div>
+                      )}
+
+                      {/* Hover Actions */}
+                      {generatedImages[item.id] && !loadingItems[item.id] && (
+                        <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <button 
+                            onClick={() => setPreviewImage({ url: generatedImages[item.id], name: item.name })}
+                            className="p-2 rounded-full bg-black/60 backdrop-blur-md border border-white/10 hover:bg-white hover:text-black transition-colors"
+                            title="View Large"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <button 
+                            onClick={() => downloadImage(generatedImages[item.id], item.name)}
+                            className="p-2 rounded-full bg-black/60 backdrop-blur-md border border-white/10 hover:bg-white hover:text-black transition-colors"
+                            title="Download"
+                          >
+                            <Download className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Content Area */}
+                    <div className="p-5 flex flex-col flex-1">
+                      <div className="mb-4">
+                        <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-white/30 mb-1 block">
+                          {item.type}
+                        </span>
+                        <h4 className="text-lg font-semibold text-white/90 group-hover:text-white transition-colors">
+                          {item.name}
+                        </h4>
+                      </div>
+
+                      <div className="mt-auto pt-4 border-t border-white/5">
+                        <button
+                          onClick={() => handleGenerate(item)}
+                          disabled={loadingItems[item.id]}
+                          className={`w-full py-3 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 transition-all duration-300 ${
+                            generatedImages[item.id]
+                              ? "bg-white/5 hover:bg-white/10 text-white/60 hover:text-white border border-white/10"
+                              : "bg-white text-black hover:bg-white/90 shadow-lg shadow-white/5"
+                          }`}
+                        >
+                          {loadingItems[item.id] ? (
+                            <RefreshCw className="w-4 h-4 animate-spin" />
+                          ) : generatedImages[item.id] ? (
+                            <>
+                              <RefreshCw className="w-4 h-4" />
+                              Reforge
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles className="w-4 h-4" />
+                              Forge Item
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </>
+        ) : (
+          <div className="space-y-12">
+            {/* Common Items Header */}
+            <motion.div 
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="max-w-3xl"
+            >
+              <div className="flex items-center gap-3 mb-4">
+                <span className="px-3 py-1 rounded-full bg-emerald-500/10 border border-emerald-500/20 text-[10px] font-bold uppercase tracking-widest text-emerald-400">
+                  Starter Gear
+                </span>
+                <div className="h-px flex-1 bg-gradient-to-r from-emerald-500/20 to-transparent"></div>
+              </div>
+              <h2 className="fantasy-title text-5xl md:text-6xl font-bold mb-4 bg-gradient-to-r from-emerald-400 via-white to-white/40 bg-clip-text text-transparent">
+                Itens Comuns
+              </h2>
+              <p className="text-lg text-white/60 leading-relaxed">
+                Equipamentos básicos para aventureiros iniciantes. Escolha qualquer item para forjar e começar sua jornada.
+              </p>
+            </motion.div>
+
+            {/* Items Grid */}
+            <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6">
+              {COMMON_ITEMS.map((item, index) => (
+                <motion.div
+                  key={item.id}
+                  initial={{ opacity: 0, y: 20 }}
+                  animate={{ opacity: 1, y: 0 }}
+                  transition={{ delay: index * 0.05 }}
+                  className="group relative"
+                >
+                  <div className="glass-panel rounded-2xl overflow-hidden border border-emerald-500/10 hover:border-emerald-500/30 transition-all duration-500 flex flex-col h-full bg-gradient-to-b from-emerald-500/[0.02] to-transparent">
+                    {/* Image Area */}
+                    <div className="aspect-square relative bg-black/40 overflow-hidden">
+                      <AnimatePresence mode="wait">
+                        {generatedImages[item.id] ? (
+                          <motion.img
+                            key="image"
+                            initial={{ opacity: 0, scale: 1.1 }}
+                            animate={{ opacity: 1, scale: 1 }}
+                            src={generatedImages[item.id]}
+                            alt={item.name}
+                            className="w-full h-full object-contain cursor-pointer"
+                            onClick={() => setPreviewImage({ url: generatedImages[item.id], name: item.name })}
+                            referrerPolicy="no-referrer"
+                          />
+                        ) : (
+                          <motion.div
+                            key="placeholder"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                            exit={{ opacity: 0 }}
+                            className="w-full h-full flex flex-col items-center justify-center p-8 text-center"
+                          >
+                            <div className="w-16 h-16 rounded-full bg-emerald-500/5 flex items-center justify-center mb-4 group-hover:scale-110 transition-transform duration-500">
+                              <Sparkles className="w-8 h-8 text-emerald-500/20" />
+                            </div>
+                            <p className="text-xs text-emerald-500/30 font-medium uppercase tracking-widest">Not Forged Yet</p>
+                          </motion.div>
+                        )}
+                      </AnimatePresence>
+
+                      {/* Loading Overlay */}
+                      {loadingItems[item.id] && (
+                        <div className="absolute inset-0 bg-black/60 backdrop-blur-sm flex flex-col items-center justify-center p-6 text-center">
+                          <RefreshCw className="w-10 h-10 text-emerald-400 animate-spin mb-4" />
+                          <p className="text-sm font-medium text-emerald-400 animate-pulse">Forging Item...</p>
+                          <p className="text-[10px] text-emerald-400/40 mt-2 uppercase tracking-tighter">Consulting the Blacksmith</p>
+                        </div>
+                      )}
+
+                      {/* Hover Actions */}
+                      {generatedImages[item.id] && !loadingItems[item.id] && (
+                        <div className="absolute top-3 right-3 flex flex-col gap-2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                          <button 
+                            onClick={() => setPreviewImage({ url: generatedImages[item.id], name: item.name })}
+                            className="p-2 rounded-full bg-black/60 backdrop-blur-md border border-white/10 hover:bg-emerald-500 hover:text-white transition-colors"
+                            title="View Large"
+                          >
+                            <Eye className="w-4 h-4" />
+                          </button>
+                          <button 
+                            onClick={() => downloadImage(generatedImages[item.id], item.name)}
+                            className="p-2 rounded-full bg-black/60 backdrop-blur-md border border-white/10 hover:bg-emerald-500 hover:text-white transition-colors"
+                            title="Download"
+                          >
+                            <Download className="w-4 h-4" />
+                          </button>
+                        </div>
+                      )}
+                    </div>
+
+                    {/* Content Area */}
+                    <div className="p-5 flex flex-col flex-1">
+                      <div className="mb-4">
+                        <div className="flex items-center gap-2 mb-1">
+                          <span className="text-[10px] font-bold uppercase tracking-[0.2em] text-emerald-500/40">
+                            {item.type}
+                          </span>
+                          <span className="px-1.5 py-0.5 rounded bg-emerald-500/10 text-[8px] font-bold text-emerald-500/60 uppercase tracking-widest">
+                            {item.rarity}
+                          </span>
+                        </div>
+                        <h4 className="text-lg font-semibold text-white/90 group-hover:text-emerald-400 transition-colors">
+                          {item.name}
+                        </h4>
+                      </div>
+
+                      <div className="mt-auto pt-4 border-t border-white/5">
+                        <button
+                          onClick={() => handleGenerate(item)}
+                          disabled={loadingItems[item.id]}
+                          className={`w-full py-3 rounded-xl text-xs font-bold uppercase tracking-widest flex items-center justify-center gap-2 transition-all duration-300 ${
+                            generatedImages[item.id]
+                              ? "bg-emerald-500/5 hover:bg-emerald-500/10 text-emerald-500/60 hover:text-emerald-400 border border-emerald-500/10"
+                              : "bg-emerald-500 text-white hover:bg-emerald-400 shadow-lg shadow-emerald-500/20"
+                          }`}
+                        >
+                          {loadingItems[item.id] ? (
+                            <RefreshCw className="w-4 h-4 animate-spin" />
+                          ) : generatedImages[item.id] ? (
+                            <>
+                              <RefreshCw className="w-4 h-4" />
+                              Reforge
+                            </>
+                          ) : (
+                            <>
+                              <Sparkles className="w-4 h-4" />
+                              Forge Item
+                            </>
+                          )}
+                        </button>
+                      </div>
+                    </div>
+                  </div>
+                </motion.div>
+              ))}
+            </div>
+          </div>
+        )}
       </main>
 
       {/* Footer */}
