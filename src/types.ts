@@ -8,11 +8,23 @@ export enum ItemType {
   RING = "Ring",
   GLOVES = "Gloves",
   PANTS = "Pants",
+  QUIVER = "Quiver",
 }
 
 export enum Rarity {
   COMMON = "Common",
+  INTERMEDIATE = "Intermediate",
+  EXCELLENT = "Excellent",
+  EPIC = "Epic",
   LEGENDARY = "Legendary",
+}
+
+export enum CharacterClass {
+  WARRIOR = "Warrior",
+  MAGE = "Mage",
+  HUNTER = "Hunter",
+  LORD = "Lord",
+  ASSASSIN = "Assassin",
 }
 
 export interface RPGItem {
